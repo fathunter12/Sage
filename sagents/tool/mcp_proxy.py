@@ -80,14 +80,9 @@ class McpProxy:
         """Run an MCP tool asynchronously"""
         if not session_id:
             session_id = "default"
-        # 只有当工具参数定义中包含 session_id / user_id 时才传递
+        # Only pass context fields when the MCP tool schema explicitly declares them.
+        # Otherwise strict MCP input validation rejects them as unexpected properties.
         tool_params = getattr(tool, 'parameters', {}) or {}
-        is_anytool_server = getattr(tool, "server_name", "") == "AnyTool"
-        if is_anytool_server:
-            if session_id and "session_id" not in kwargs:
-                kwargs["session_id"] = session_id
-            if user_id and "user_id" not in kwargs:
-                kwargs["user_id"] = user_id
         if 'session_id' in tool_params:
             kwargs["session_id"] = session_id
         if user_id and 'user_id' in tool_params and 'user_id' not in kwargs:
